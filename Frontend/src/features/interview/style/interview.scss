@@ -1,0 +1,605 @@
+// ── Theme Variables (mirrors home.scss) ───────────────────────────────────────
+$bg-page: #0d1117;
+$bg-card: #161b22;
+$bg-panel: #1c2230;
+$border-color: #2a3348;
+$text-primary: #e6edf3;
+$text-muted: #7d8590;
+$accent: #ff2d78;
+$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+// severity palette
+$severity-high: #ff4d4d;
+$severity-medium: #f5a623;
+$severity-low: #3fb950;
+
+// ── Page Shell ────────────────────────────────────────────────────────────────
+.interview-page {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page;
+    color: $text-primary;
+    font-family: $font-stack;
+    display: flex;
+    align-items: stretch;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+// ── 3-Column Card ─────────────────────────────────────────────────────────────
+.interview-layout {
+    display: flex;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    background-color: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+// Vertical divider between columns
+.interview-divider {
+    width: 1px;
+    background-color: $border-color;
+    flex-shrink: 0;
+}
+
+// ── Left Sidebar (Navigation) ─────────────────────────────────────────────────
+.interview-nav {
+    width: 220px;
+    flex-shrink: 0;
+    padding: 1.75rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.25rem;
+
+    .nav-top {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    &__label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: $text-muted;
+        padding: 0 0.75rem;
+        margin-bottom: 0.6rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        width: 100%;
+        padding: 0.7rem 0.75rem;
+        background: none;
+        border: none;
+        border-radius: 0.5rem;
+        color: $text-muted;
+        font-family: $font-stack;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.15s, color 0.15s;
+
+        &:hover {
+            background-color: $bg-panel;
+            color: $text-primary;
+        }
+
+        &--active {
+            background-color: rgba($accent, 0.1);
+            color: $accent;
+
+            .interview-nav__icon svg {
+                stroke: $accent;
+            }
+
+            .interview-nav__badge {
+                background-color: $accent;
+                color: #fff;
+            }
+        }
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    &__badge {
+        margin-left: auto;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 20px;
+        text-align: center;
+        padding: 0.1rem 0.4rem;
+        border-radius: 0.3rem;
+        background-color: rgba($text-muted, 0.15);
+        color: $text-muted;
+        transition: all 0.15s;
+    }
+}
+
+// Download Resume Button
+.download-resume-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    background: linear-gradient(135deg, $accent 0%, #d61f5c 100%);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    font-family: $font-stack;
+    margin-top: auto;
+    box-shadow: 0 4px 12px rgba($accent, 0.2);
+
+    &:hover {
+        opacity: 0.95;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+// ── Center Content ────────────────────────────────────────────────────────────
+.interview-content {
+    flex: 1;
+    padding: 1.75rem 2rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 3rem);
+
+    // hide scrollbar but keep scroll
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.content-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid $border-color;
+
+    h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+    }
+
+    &__count {
+        font-size: 0.78rem;
+        color: $text-muted;
+        background-color: $bg-panel;
+        padding: 0.15rem 0.6rem;
+        border-radius: 2rem;
+        border: 1px solid $border-color;
+    }
+}
+
+// ── List Items (questions & plan) ─────────────────────────────────────────────
+.content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.content-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.95rem 1.1rem;
+    background-color: $bg-panel;
+    border: 1px solid $border-color;
+    border-radius: 0.6rem;
+    transition: border-color 0.2s, transform 0.15s;
+    box-sizing: border-box;
+
+    &:hover {
+        border-color: rgba($accent, 0.35);
+    }
+
+    &__number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        background: rgba($accent, 0.12);
+        color: $accent;
+        font-size: 0.7rem;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-top: 1px;
+    }
+
+    &__text {
+        font-size: 0.88rem;
+        color: $text-primary;
+        line-height: 1.55;
+        flex: 1;
+    }
+}
+
+// ── Expandable Question Card ──
+.q-card {
+    cursor: pointer;
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    &__question {
+        font-weight: 500;
+    }
+
+    &__chevron {
+        margin-left: auto;
+        color: $text-muted;
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s ease, color 0.2s;
+        padding-top: 3px;
+
+        &--open {
+            transform: rotate(180deg);
+            color: $accent;
+        }
+    }
+
+    &__body {
+        margin-top: 0.95rem;
+        padding-top: 0.95rem;
+        border-top: 1px solid $border-color;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        animation: slideDown 0.2s ease-out;
+    }
+
+    &__section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        p {
+            margin: 0;
+            font-size: 0.84rem;
+            color: lighten($text-muted, 12%);
+            line-height: 1.6;
+        }
+    }
+
+    &__tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.25rem;
+        width: fit-content;
+
+        &--intention {
+            color: #a78bfa;
+            background-color: rgba(#a78bfa, 0.08);
+            border: 1px solid rgba(#a78bfa, 0.15);
+        }
+
+        &--answer {
+            color: #3fb950;
+            background-color: rgba(#3fb950, 0.08);
+            border: 1px solid rgba(#3fb950, 0.15);
+        }
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Road Map Day ──
+.roadmap-day {
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        margin-bottom: 0.65rem;
+    }
+
+    &__badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: $accent;
+        background-color: rgba($accent, 0.1);
+        border: 1px solid rgba($accent, 0.2);
+        padding: 0.15rem 0.5rem;
+        border-radius: 2rem;
+    }
+
+    &__focus {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: $text-primary;
+    }
+
+    &__tasks {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 0 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+
+    &__task {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    &__bullet {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background-color: $accent;
+        flex-shrink: 0;
+        margin-top: 7px;
+    }
+
+    &__task-text {
+        font-size: 0.83rem;
+        color: lighten($text-muted, 10%);
+        line-height: 1.5;
+    }
+}
+
+// staggered entrance
+@for $i from 1 through 12 {
+    .content-item:nth-child(#{$i}) {
+        animation: fadeSlide 0.3s ease-out #{$i * 0.04}s both;
+    }
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+// ── Right Sidebar (Skill Gaps) ────────────────────────────────────────────────
+.interview-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    padding: 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: $text-muted;
+        margin: 0;
+    }
+}
+
+// Match score ring
+.match-ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    &__circle {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid $accent;
+        background: rgba($accent, 0.06);
+    }
+
+    &__value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: $text-primary;
+        line-height: 1;
+    }
+
+    &__pct {
+        font-size: 0.7rem;
+        color: $text-muted;
+    }
+
+    &__hint {
+        margin: 0;
+        font-size: 0.75rem;
+        color: $text-muted;
+        text-align: center;
+    }
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: $border-color;
+}
+
+// Skill gap chips
+.skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.38rem 0.7rem;
+    background-color: $bg-panel;
+    border: 1px solid $border-color;
+    border-radius: 2rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: $text-primary;
+    transition: all 0.2s;
+    cursor: default;
+
+    &:hover {
+        transform: translateY(-1px);
+    }
+
+    &__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &--high {
+        border-color: rgba($severity-high, 0.3);
+        background-color: rgba($severity-high, 0.04);
+
+        &:hover {
+            border-color: $severity-high;
+            background-color: rgba($severity-high, 0.1);
+        }
+
+        .skill-chip__dot {
+            background-color: $severity-high;
+            box-shadow: 0 0 6px $severity-high;
+        }
+    }
+
+    &--medium {
+        border-color: rgba($severity-medium, 0.3);
+        background-color: rgba($severity-medium, 0.04);
+
+        &:hover {
+            border-color: $severity-medium;
+            background-color: rgba($severity-medium, 0.1);
+        }
+
+        .skill-chip__dot {
+            background-color: $severity-medium;
+            box-shadow: 0 0 6px $severity-medium;
+        }
+    }
+
+    &--low {
+        border-color: rgba($severity-low, 0.3);
+        background-color: rgba($severity-low, 0.04);
+
+        &:hover {
+            border-color: $severity-low;
+            background-color: rgba($severity-low, 0.1);
+        }
+
+        .skill-chip__dot {
+            background-color: $severity-low;
+            box-shadow: 0 0 6px $severity-low;
+        }
+    }
+}
+
+// staggered entrance for chips
+@for $i from 1 through 8 {
+    .skill-chip:nth-child(#{$i}) {
+        animation: popIn 0.3s ease-out #{$i * 0.06}s both;
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// ── Loading State ─────────────────────────────────────────────────────────────
+.loading-screen {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $text-primary;
+    font-family: $font-stack;
+
+    h1 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: $text-muted;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
