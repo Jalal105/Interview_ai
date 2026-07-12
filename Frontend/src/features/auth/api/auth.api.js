@@ -3,7 +3,7 @@ import axios from "axios"
 
 //it common for all api calls so we define it here and use it in all api calls
 const api = axios.create({
-    baseURL:"http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
     withCredentials:true
 })
 
