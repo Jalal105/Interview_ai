@@ -2,7 +2,8 @@ const pdfParse = require("pdf-parse")
 const PDFDocument = require("pdfkit")
 const mongoose = require("mongoose")
 
-const { generateInterviewReport, generateOptimizedResume } = require("../services/ai.services")
+const { generateInterviewReport, generateOptimizedResume, generateStructuredResume } = require("../services/ai.services")
+const { generateResumePdfBuffer } = require("../services/resumePdfGenerator")
 const interviewReportModel = require("../models/interviewReport.model")
 
 
@@ -21,7 +22,7 @@ async function genarateInterViewReportController(req, res) {
         // Converts the buffer into a Uint8Array, which is an array of bytes.
         //req.file.buffer This comes from middleware like Multer when a user uploads a file.
         const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-        
+
         const interViewReportByAi = await generateInterviewReport({
             resume: resumeContent.text,
             selfDescription: selfDescription || "",
@@ -36,16 +37,26 @@ async function genarateInterViewReportController(req, res) {
             ...interViewReportByAi
         })
 
+        // Pre-generate tailored structured resume in the background so it's ready when user navigates to the resume tab
+        generateStructuredResume({
+            resume: resumeContent.text,
+            selfDescription: selfDescription || "",
+            jobDescription
+        }).then(async structuredResume => {
+            await interviewReportModel.findByIdAndUpdate(interviewReport._id, { structuredResume });
+            console.log(`Pre-generated structured resume for report ${interviewReport._id}`);
+        }).catch(e => console.error("Background resume pre-generation error:", e.message));
+
         res.status(201).json({
             message: "Interview report generated successfully",
             interviewReport
         })
     } catch (err) {
         console.error("Error generating interview report:", err)
-        
+
         const statusCode = err.status || err.statusCode || (err.error && err.error.code) || 500
         const message = err.message || "Failed to generate interview report"
-        
+
         res.status(statusCode >= 400 && statusCode < 600 ? statusCode : 500).json({
             message,
             error: err.toString()
@@ -90,6 +101,93 @@ async function getAllReportsController(req, res) {
     }
 }
 
+/**
+ * Controller to fetch or generate structured resume data for interactive preview
+ */
+async function getResumeDataController(req, res) {
+    try {
+        const { id } = req.params
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid report ID format" })
+        }
+        const interviewReport = await interviewReportModel.findById(id)
+
+        if (!interviewReport) {
+            return res.status(404).json({ message: "Interview report not found" })
+        }
+
+        if (interviewReport.user.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Unauthorized access" })
+        }
+
+        // Return cached structured resume if available
+        if (interviewReport.structuredResume) {
+            return res.status(200).json({
+                message: "Structured resume fetched successfully",
+                structuredResume: interviewReport.structuredResume
+            })
+        }
+
+        // Generate with AI and cache
+        const structuredResume = await generateStructuredResume({
+            resume: interviewReport.resume || "",
+            selfDescription: interviewReport.selfDescription || "",
+            jobDescription: interviewReport.jobDescription || ""
+        })
+
+        interviewReport.structuredResume = structuredResume
+        await interviewReport.save().catch(e => console.error("Failed to save structured resume:", e))
+
+        res.status(200).json({
+            message: "Structured resume generated and cached successfully",
+            structuredResume
+        })
+    } catch (err) {
+        console.error("Error fetching structured resume data:", err)
+        res.status(500).json({ message: err.message || "Server error fetching resume data" })
+    }
+}
+
+/**
+ * Controller to save user edits to their tailored resume
+ */
+async function updateResumeDataController(req, res) {
+    try {
+        const { id } = req.params
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid report ID format" })
+        }
+        const interviewReport = await interviewReportModel.findById(id)
+
+        if (!interviewReport) {
+            return res.status(404).json({ message: "Interview report not found" })
+        }
+
+        if (interviewReport.user.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Unauthorized access" })
+        }
+
+        const { structuredResume } = req.body
+        if (!structuredResume) {
+            return res.status(400).json({ message: "structuredResume is required" })
+        }
+
+        interviewReport.structuredResume = structuredResume
+        await interviewReport.save()
+
+        res.status(200).json({
+            message: "Resume updated successfully",
+            structuredResume: interviewReport.structuredResume
+        })
+    } catch (err) {
+        console.error("Error updating structured resume data:", err)
+        res.status(500).json({ message: err.message || "Server error updating resume" })
+    }
+}
+
+/**
+ * Controller to generate executive ATS PDF
+ */
 async function generateResumePdfController(req, res) {
     try {
         const { id } = req.params
@@ -106,45 +204,41 @@ async function generateResumePdfController(req, res) {
             return res.status(403).json({ message: "Unauthorized access" })
         }
 
-        const optimizedResumeText = await generateOptimizedResume({
-            resume: interviewReport.resume || "",
-            selfDescription: interviewReport.selfDescription || "",
-            jobDescription: interviewReport.jobDescription || ""
-        })
+        let structuredResume = interviewReport.structuredResume
+        if (!structuredResume) {
+            structuredResume = await generateStructuredResume({
+                resume: interviewReport.resume || "",
+                selfDescription: interviewReport.selfDescription || "",
+                jobDescription: interviewReport.jobDescription || ""
+            })
 
-        // Generate PDF using PDFKit
-        const doc = new PDFDocument({ margin: 50 })
+            interviewReport.structuredResume = structuredResume
+            await interviewReport.save().catch(saveErr => console.error("Failed to cache structured resume:", saveErr))
+        }
+
+        const themeColor = req.body?.themeColor || structuredResume.themeColor || "#ff2d78"
+
+        const pdfBuffer = await generateResumePdfBuffer(structuredResume, themeColor)
+
         res.setHeader("Content-Type", "application/pdf")
         res.setHeader("Content-Disposition", `attachment; filename=resume_${id}.pdf`)
-        doc.pipe(res)
-
-        // Title/Header
-        doc.font("Helvetica-Bold").fontSize(22).fillColor("#ff2d78").text("TAILORED PROFESSIONAL RESUME", { align: "center" })
-        doc.moveDown(0.5)
-        doc.font("Helvetica-Oblique").fontSize(10).fillColor("#7d8590").text(`Generated for target: ${interviewReport.title || "Target Role"}`, { align: "center" })
-        
-        // Horizontal Divider Line
-        doc.moveDown(1)
-        doc.strokeColor("#2a3348").lineWidth(1)
-        doc.moveTo(50, doc.y).lineTo(562, doc.y).stroke()
-        doc.moveDown(1.5)
-
-        // Body Text
-        doc.font("Helvetica").fontSize(11).fillColor("#0d1117").lineGap(4).text(optimizedResumeText, {
-            align: "left",
-            width: 512
-        })
-
-        doc.end()
+        res.setHeader("Content-Length", pdfBuffer.length)
+        return res.status(200).send(pdfBuffer)
     } catch (err) {
         console.error("PDF Generation error:", err)
-        res.status(500).json({ message: err.message || "Server error generating PDF" })
+        const statusCode = err.status || err.statusCode || (err.error && err.error.code) || 500
+        const isClientError = statusCode >= 400 && statusCode < 500
+        res.status(isClientError ? statusCode : 500).json({
+            message: err.message || "Failed to generate resume PDF. Please try again."
+        })
     }
 }
 
-module.exports = { 
-    genarateInterViewReportController, 
-    getReportByIdController, 
-    getAllReportsController, 
-    generateResumePdfController 
+module.exports = {
+    genarateInterViewReportController,
+    getReportByIdController,
+    getAllReportsController,
+    getResumeDataController,
+    updateResumeDataController,
+    generateResumePdfController
 }

@@ -1,0 +1,830 @@
+// ── Tailored Resume Stylesheet ──────────────────────────────────────────
+
+.tailored-resume-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    animation: fadeIn 0.3s ease;
+}
+
+// ── Control Bar ──────────────────────────────────────────────────────────
+.resume-control-bar {
+    background: #161b22;
+    border: 1px solid #2a3348;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .control-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .control-label {
+            font-size: 0.85rem;
+            color: #7d8590;
+            font-weight: 500;
+        }
+    }
+
+    .color-palette {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .color-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+
+            &:hover {
+                transform: scale(1.15);
+            }
+
+            &.active {
+                border-color: #ffffff;
+                transform: scale(1.2);
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+}
+
+// Button styles in control bar
+.resume-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+
+    &--primary {
+        background: #ff2d78;
+        color: #ffffff;
+        border-color: #ff2d78;
+
+        &:hover:not(:disabled) {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &--secondary {
+        background: #1c2230;
+        color: #e6edf3;
+        border-color: #2a3348;
+
+        &:hover {
+            background: #252d3d;
+            color: #ffffff;
+        }
+
+        &.active {
+            border-color: #ff2d78;
+            color: #ff2d78;
+        }
+    }
+
+    &--save {
+        background: #059669;
+        color: #ffffff;
+        border-color: #059669;
+
+        &:hover {
+            filter: brightness(1.15);
+        }
+    }
+}
+
+// ── ATS Validation Scorecard ──────────────────────────────────────────────
+.ats-scorecard {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(255, 45, 120, 0.08) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .score-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        .score-circle {
+            background: #ff2d78;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .score-text {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #e6edf3;
+        }
+    }
+
+    .ats-checklist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+
+        .check-item {
+            font-size: 0.8rem;
+            color: #3fb950;
+            background: rgba(63, 185, 80, 0.1);
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            border: 1px solid rgba(63, 185, 80, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+    }
+}
+
+// ── Resume Paper Sheet (The Preview Document) ─────────────────────────────
+.resume-paper-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.resume-paper-sheet {
+    background: #ffffff;
+    color: #1e293b;
+    width: 100%;
+    max-width: 820px;
+    min-height: 1060px;
+    padding: 3rem 3.25rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+    box-sizing: border-box;
+
+    // Header
+    .resume-header {
+        text-align: center;
+        margin-bottom: 1.25rem;
+
+        .candidate-name {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin: 0;
+
+            &.editable-input {
+                width: 100%;
+                text-align: center;
+                font-size: 1.85rem;
+                font-weight: 800;
+                border: 1px dashed #cbd5e1;
+                padding: 0.25rem;
+                border-radius: 4px;
+            }
+        }
+
+        .target-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0.25rem 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+
+            &.editable-input {
+                width: 70%;
+                margin: 0.3rem auto;
+                text-align: center;
+                font-size: 1rem;
+                font-weight: 700;
+                border: 1px dashed #cbd5e1;
+                padding: 0.25rem;
+                border-radius: 4px;
+            }
+        }
+
+        .contact-bar {
+            font-size: 0.82rem;
+            color: #64748b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.35rem;
+
+            .contact-sep {
+                color: #cbd5e1;
+            }
+
+            a {
+                color: #475569;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .header-divider {
+            height: 2px;
+            width: 100%;
+            margin-top: 0.9rem;
+            border-radius: 2px;
+        }
+    }
+
+    // Section Layout
+    .resume-section {
+        margin-bottom: 1.2rem;
+
+        .section-header {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1.5px solid;
+        }
+
+        .summary-text {
+            font-size: 0.88rem;
+            color: #334155;
+            line-height: 1.55;
+            margin: 0;
+
+            &.editable-textarea {
+                width: 100%;
+                min-height: 80px;
+                border: 1px dashed #cbd5e1;
+                padding: 0.4rem;
+                border-radius: 4px;
+                font-family: inherit;
+                font-size: 0.88rem;
+            }
+        }
+    }
+
+    // Skills Layout
+    .skills-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        .skill-row {
+            font-size: 0.86rem;
+            color: #334155;
+            line-height: 1.4;
+
+            .skill-cat-title {
+                font-weight: 700;
+                color: #0f172a;
+            }
+
+            .skill-items {
+                color: #475569;
+            }
+        }
+    }
+
+    // Experience Items
+    .experience-list,
+    .projects-list,
+    .education-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .exp-item,
+    .project-item,
+    .edu-item {
+        .exp-header,
+        .project-header,
+        .edu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+
+            .exp-role,
+            .project-title,
+            .edu-degree {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #0f172a;
+            }
+
+            .exp-dates,
+            .edu-date {
+                font-size: 0.82rem;
+                font-weight: 600;
+                color: #64748b;
+                white-space: nowrap;
+            }
+        }
+
+        .exp-sub,
+        .project-sub,
+        .edu-sub {
+            font-size: 0.85rem;
+            font-style: italic;
+            font-weight: 500;
+            margin: 0.15rem 0 0.35rem 0;
+        }
+
+        .exp-bullets,
+        .project-bullets {
+            margin: 0.3rem 0 0 1.2rem;
+            padding: 0;
+
+            li {
+                font-size: 0.86rem;
+                color: #334155;
+                line-height: 1.45;
+                margin-bottom: 0.25rem;
+            }
+        }
+    }
+}
+
+// ── Print Media Query for Direct Browser Print ────────────────────────────
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .resume-paper-sheet,
+    .resume-paper-sheet * {
+        visibility: visible;
+    }
+
+    .resume-paper-sheet {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    .resume-control-bar,
+    .ats-scorecard,
+    .interview-nav,
+    .interview-sidebar,
+    .interview-header {
+        display: none !important;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}
+
+// ── ATS Score Pill (in control bar) ──────────────────────────────────────────
+.ats-score-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #161b22;
+    border: 1px solid #2a3348;
+    border-radius: 20px;
+    padding: 0.3rem 0.85rem;
+
+    &__label {
+        font-size: 0.75rem;
+        color: #7d8590;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    &__value {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #fff;
+        padding: 0.15rem 0.55rem;
+        border-radius: 12px;
+    }
+
+    &__role {
+        font-size: 0.78rem;
+        color: #e6edf3;
+        font-weight: 500;
+        max-width: 160px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+// ── Split-Panel Builder Layout ────────────────────────────────────────────────
+.resume-builder-layout {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    width: 100%;
+
+    // Full-width when only preview visible
+    .resume-paper-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+
+    // Split: editor takes 38%, preview gets 62%
+    &--editing {
+        .editor-panel {
+            flex: 0 0 38%;
+            min-width: 300px;
+            max-width: 440px;
+        }
+
+        .resume-paper-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    @media (max-width: 900px) {
+        flex-direction: column;
+
+        &--editing .editor-panel {
+            flex: unset;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+}
+
+// ── Editor Panel (Left Sidebar) ───────────────────────────────────────────────
+.editor-panel {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    overflow: hidden;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 1rem;
+    animation: fadeIn 0.25s ease;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-track { background: #0d1117; }
+    &::-webkit-scrollbar-thumb { background: #21262d; border-radius: 3px; }
+
+    &__header {
+        padding: 1rem 1.25rem 0.85rem;
+        border-bottom: 1px solid #21262d;
+        background: #161b22;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    &__title {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e6edf3;
+    }
+
+    &__subtitle {
+        display: block;
+        font-size: 0.75rem;
+        color: #7d8590;
+        margin-top: 0.2rem;
+    }
+}
+
+.editor-sections {
+    padding: 0.5rem 0;
+}
+
+// ── Accordion Section ─────────────────────────────────────────────────────────
+.editor-section {
+    border-bottom: 1px solid #21262d;
+
+    &:last-child { border-bottom: none; }
+
+    &__header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.8rem 1.25rem;
+        background: none;
+        border: none;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        color: #7d8590;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-align: left;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+        &:hover {
+            background: #161b22;
+            color: #c9d1d9;
+        }
+    }
+
+    &__icon { font-size: 1rem; }
+
+    &__title { flex: 1; }
+
+    &__chevron {
+        font-size: 1.1rem;
+        transition: transform 0.2s;
+        display: inline-block;
+
+        &.open { transform: rotate(90deg); }
+    }
+
+    &__body {
+        padding: 0.75rem 1.25rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        animation: fadeIn 0.2s ease;
+    }
+
+    &--open .editor-section__header {
+        background: rgba(255, 45, 120, 0.05);
+    }
+}
+
+// ── Form Fields ───────────────────────────────────────────────────────────────
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    &__label {
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: #8b949e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    &__input {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 7px;
+        color: #e6edf3;
+        font-size: 0.875rem;
+        padding: 0.45rem 0.7rem;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: inherit;
+
+        &::placeholder { color: #484f58; }
+
+        &:focus {
+            outline: none;
+            border-color: #ff2d78;
+            box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.12);
+        }
+    }
+
+    &__textarea {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 7px;
+        color: #e6edf3;
+        font-size: 0.875rem;
+        padding: 0.5rem 0.7rem;
+        width: 100%;
+        box-sizing: border-box;
+        resize: vertical;
+        min-height: 90px;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: inherit;
+        line-height: 1.5;
+
+        &::placeholder { color: #484f58; }
+
+        &:focus {
+            outline: none;
+            border-color: #ff2d78;
+            box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.12);
+        }
+    }
+}
+
+// Side-by-side field pair (start/end date)
+.editor-field-row {
+    display: flex;
+    gap: 0.6rem;
+
+    .editor-field { flex: 1; }
+}
+
+// ── Editor Card (per experience / project / education item) ───────────────────
+.editor-card {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    &__index {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #7d8590;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__title-input {
+        flex: 1;
+    }
+}
+
+.card-remove-btn {
+    background: none;
+    border: none;
+    color: #6e7681;
+    font-size: 1.15rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+        color: #f85149;
+        background: rgba(248, 81, 73, 0.1);
+    }
+}
+
+// ── Tag Chip Input ────────────────────────────────────────────────────────────
+.tag-input-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 7px;
+    padding: 0.4rem 0.6rem;
+    cursor: text;
+    transition: border-color 0.15s;
+
+    &:focus-within {
+        border-color: #ff2d78;
+        box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.12);
+    }
+
+    &__input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #e6edf3;
+        font-size: 0.85rem;
+        font-family: inherit;
+        min-width: 90px;
+        flex: 1;
+
+        &::placeholder { color: #484f58; }
+    }
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(255, 45, 120, 0.12);
+    border: 1px solid rgba(255, 45, 120, 0.3);
+    color: #ff2d78;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.18rem 0.45rem;
+    border-radius: 20px;
+    white-space: nowrap;
+
+    &__remove {
+        background: none;
+        border: none;
+        color: rgba(255, 45, 120, 0.6);
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 0;
+        line-height: 1;
+        transition: color 0.15s;
+
+        &:hover { color: #ff2d78; }
+    }
+}
+
+// ── Bullet List ───────────────────────────────────────────────────────────────
+.bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.bullet-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    &__dot {
+        color: #ff2d78;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    &__input {
+        flex: 1;
+    }
+
+    &__remove {
+        background: none;
+        border: none;
+        color: #6e7681;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0 0.15rem;
+        border-radius: 4px;
+        transition: color 0.15s;
+        flex-shrink: 0;
+
+        &:hover { color: #f85149; }
+    }
+}
+
+// ── Add Item Button ───────────────────────────────────────────────────────────
+.add-item-btn {
+    background: none;
+    border: 1px dashed #30363d;
+    border-radius: 7px;
+    color: #7d8590;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    font-family: inherit;
+
+    &:hover {
+        color: #ff2d78;
+        border-color: rgba(255, 45, 120, 0.4);
+        background: rgba(255, 45, 120, 0.05);
+    }
+
+    &--block {
+        width: 100%;
+        margin-top: 0.35rem;
+    }
+}
+

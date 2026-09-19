@@ -118,7 +118,20 @@ const interviewReportSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [ true, "Job title is required" ]
+    },
+    optimizedResume: {
+        type: String
+    },
+    structuredResume: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
+    },
+    // Deterministic score breakdown (populated by scoring.service.js, not Gemini)
+    scoreBreakdown: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
     }
+
 }, {
     timestamps: true
 })

@@ -48,10 +48,30 @@ export const getAllInterviewReports = async () => {
 
 
 /**
+ * @description Service to get or generate structured resume data for interactive preview.
+ */
+export const getResumeData = async ({ interviewReportId }) => {
+    const response = await api.get(`/api/interview/resume/data/${interviewReportId}`)
+    return response.data
+}
+
+/**
+ * @description Service to update tailored resume data.
+ */
+export const updateResumeData = async ({ interviewReportId, structuredResume }) => {
+    const response = await api.put(`/api/interview/resume/data/${interviewReportId}`, {
+        structuredResume
+    })
+    return response.data
+}
+
+/**
  * @description Service to generate resume pdf based on user self description, resume content and job description.
  */
-export const generateResumePdf = async ({ interviewReportId }) => {
-    const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, null, {
+export const generateResumePdf = async ({ interviewReportId, themeColor }) => {
+    const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, {
+        themeColor
+    }, {
         responseType: "blob"
     })
 

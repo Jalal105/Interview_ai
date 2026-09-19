@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInterview.js'
 import { useParams, useNavigate } from 'react-router'
+import TailoredResumeView from '../components/TailoredResumeView.jsx'
 
 const NAV_ITEMS = [
     {
@@ -38,6 +39,21 @@ const NAV_ITEMS = [
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
                 <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+        )
+    },
+    {
+        id: 'resume',
+        label: 'Tailored Resume',
+        dataKey: 'structuredResume',
+        icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <line x1="10" y1="9" x2="8" y2="9" />
             </svg>
         )
     }
@@ -94,7 +110,17 @@ const RoadMapDay = ({ day, index }) => (
 // ── Main Component ──
 const Interview = () => {
     const [activeNav, setActiveNav] = useState('technical')
-    const { report, loading, error, getResumePdf } = useInterview()
+    const {
+        report,
+        loading,
+        downloadingPdf,
+        resumeData,
+        resumeLoading,
+        fetchResumeData,
+        saveResumeData,
+        error,
+        getResumePdf
+    } = useInterview()
     const { interviewId } = useParams()
     const navigate = useNavigate()
 
@@ -164,7 +190,7 @@ const Interview = () => {
     }
 
     const currentSection = NAV_ITEMS.find(n => n.id === activeNav)
-    const currentItems = report[currentSection.dataKey] || []
+    const currentItems = (currentSection && report[currentSection.dataKey]) || []
 
     return (
         <div className='interview-page'>
@@ -183,7 +209,7 @@ const Interview = () => {
                                 <span className='interview-nav__icon'>{item.icon}</span>
                                 {item.label}
                                 <span className='interview-nav__badge'>
-                                    {(report[item.dataKey] || []).length}
+                                    {item.id === 'resume' ? 'ATS' : (report[item.dataKey] || []).length}
                                 </span>
                             </button>
                         ))}
@@ -191,13 +217,34 @@ const Interview = () => {
                     <button
                         onClick={() => getResumePdf(report._id || interviewId)}
                         className='download-resume-btn'
+                        disabled={downloadingPdf}
+                        style={{ opacity: downloadingPdf ? 0.75 : 1, cursor: downloadingPdf ? 'not-allowed' : 'pointer' }}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                        Download Resume
+                        {downloadingPdf ? (
+                            <>
+                                <span style={{
+                                    display: 'inline-block',
+                                    width: '14px',
+                                    height: '14px',
+                                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                                    borderTopColor: '#ffffff',
+                                    borderRadius: '50%',
+                                    animation: 'spin 0.8s linear infinite',
+                                    marginRight: '8px',
+                                    verticalAlign: 'middle'
+                                }} />
+                                Generating PDF…
+                            </>
+                        ) : (
+                            <>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Download Resume
+                            </>
+                        )}
                     </button>
                 </nav>
 
@@ -205,24 +252,38 @@ const Interview = () => {
 
                 {/* ── Center — Main Content ── */}
                 <main className='interview-content'>
-                    <div className='content-header'>
-                        <h2>{currentSection.label}</h2>
-                        <span className='content-header__count'>
-                            {currentItems.length} items
-                        </span>
-                    </div>
+                    {activeNav === 'resume' ? (
+                        <TailoredResumeView
+                            report={report}
+                            resumeData={resumeData}
+                            resumeLoading={resumeLoading}
+                            fetchResumeData={fetchResumeData}
+                            saveResumeData={saveResumeData}
+                            downloadingPdf={downloadingPdf}
+                            getResumePdf={getResumePdf}
+                        />
+                    ) : (
+                        <>
+                            <div className='content-header'>
+                                <h2>{currentSection?.label}</h2>
+                                <span className='content-header__count'>
+                                    {currentItems.length} items
+                                </span>
+                            </div>
 
-                    <ul className='content-list' key={activeNav}>
-                        {activeNav === 'preparation' ? (
-                            currentItems.map((day, idx) => (
-                                <RoadMapDay key={idx} day={day} index={idx} />
-                            ))
-                        ) : (
-                            currentItems.map((q, idx) => (
-                                <QuestionCard key={idx} item={q} index={idx} />
-                            ))
-                        )}
-                    </ul>
+                            <ul className='content-list' key={activeNav}>
+                                {activeNav === 'preparation' ? (
+                                    currentItems.map((day, idx) => (
+                                        <RoadMapDay key={idx} day={day} index={idx} />
+                                    ))
+                                ) : (
+                                    currentItems.map((q, idx) => (
+                                        <QuestionCard key={idx} item={q} index={idx} />
+                                    ))
+                                )}
+                            </ul>
+                        </>
+                    )}
                 </main>
 
                 <div className='interview-divider' />

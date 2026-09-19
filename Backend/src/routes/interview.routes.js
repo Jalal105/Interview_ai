@@ -27,8 +27,22 @@ interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllRepo
 interviewRouter.get("/report/:id", authMiddleware.authUser, interviewController.getReportByIdController)
 
 /**
+ * @route GET /api/interview/resume/data/:id
+ * @desc Get or generate structured resume data for interactive preview
+ * @access Private
+ */
+interviewRouter.get("/resume/data/:id", authMiddleware.authUser, interviewController.getResumeDataController)
+
+/**
+ * @route PUT /api/interview/resume/data/:id
+ * @desc Update tailored resume data
+ * @access Private
+ */
+interviewRouter.put("/resume/data/:id", authMiddleware.authUser, interviewController.updateResumeDataController)
+
+/**
  * @route POST /api/interview/resume/pdf/:id
- * @desc Generate and download a polished resume PDF based on the report
+ * @desc Generate and download an executive ATS-compliant resume PDF
  * @access Private
  */
 interviewRouter.post("/resume/pdf/:id", authMiddleware.authUser, interviewController.generateResumePdfController)
